@@ -21,7 +21,9 @@ df.columns=['label', 'text']
 df = df[['label', 'text']]
 df['label'] = df['label'].map({'0': 0, '1': 1})
 
-df = df.sample(n=10000, random_state=42)
+df = df.sample(n=80000, random_state=42)
+print("Number of NaN labels:", df['label'].isna().sum())
+df = df.dropna(subset=['label'])
 df.describe(include="all")
 
 

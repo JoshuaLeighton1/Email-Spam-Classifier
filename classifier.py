@@ -23,13 +23,13 @@ df.describe(include="all")
 
 def preprocess_text(text):
     #Remove all special characters and noise keep only letters and space
-    text = re.sub(r'[^A-Za-z\s]', '', text)
+    text = re.sub(r'[^A-Za-z\s]', '', text, flags=re.MULTILINE)
     #convert all text to lowercase to ensure consistency
     text = text.lower()
     words = text.split()
     #remove all stopwords: those that have little or no sentiment 
     stop_words = set(stopwords.words('english'))
-    words = [words for word in words if word not in stop_words]
+    words = [word for word in words if word not in stop_words]
     #apply stemming
     stemmer = PorterStemmer()
     words = [stemmer.stem(word) for word in words]
@@ -37,11 +37,11 @@ def preprocess_text(text):
 
 #Apply preprocesing
 
-df['cleaned_text'] = df['text'].apply(preprocess_text)
+df['cleaned_text'] = df['text'].apply(preprocess_text) 
 
 df['cleaned_text'].describe(include='all')
  #Feature Extraction 
 
 
-
-
+#test 
+print(preprocess_text("Hello@ I am sending yoU a Ema@il"))

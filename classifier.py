@@ -5,6 +5,7 @@ import re
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
+from sklearn.model_selection import train_test_split
 
 #Run once
 nltk.download('stopwords')
@@ -20,7 +21,7 @@ df = df.sample(n=5000, random_state=42)
 df.describe(include="all")
 
 
-def preprocess(text):
+def preprocess_text(text):
     #Remove all special characters and noise keep only letters and space
     text = re.sub(r'[^A-Za-z\s]', '', text)
     #convert all text to lowercase to ensure consistency
@@ -33,3 +34,14 @@ def preprocess(text):
     stemmer = PorterStemmer()
     words = [stemmer.stem(word) for word in words]
     return ' '.join(words)
+
+#Apply preprocesing
+
+df['cleaned_text'] = df['text'].apply(preprocess_text)
+
+df['cleaned_text'].describe(include='all')
+ #Feature Extraction 
+
+
+
+

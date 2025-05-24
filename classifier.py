@@ -6,6 +6,7 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 #Run once
 nltk.download('stopwords')
@@ -40,8 +41,21 @@ def preprocess_text(text):
 df['cleaned_text'] = df['text'].apply(preprocess_text) 
 
 df['cleaned_text'].describe(include='all')
- #Feature Extraction 
+
+#Feature Extraction  with TF-IDF
+
+vectorizer = TfidfVectorizer(max_features=5000)
+#Fit numerical features 
+X = vectorizer.fit_transform(df['cleaned_text'])
+y = df['label']
+
+#Split data into training and testing sets
+
+X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.2, random_state=42)
+
+
+
 
 
 #test 
-print(preprocess_text("Hello@ I am sending yoU a Ema@il"))
+#print(preprocess_text("Hello@ I am sending yoU a Ema@il"))

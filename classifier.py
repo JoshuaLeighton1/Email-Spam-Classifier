@@ -19,8 +19,9 @@ df = pd.read_csv('combined_data.csv', encoding="latin-1", header=None)
 
 df.columns=['label', 'text']
 df = df[['label', 'text']]
+df['label'] = df['label'].map({'0': 0, '1': 1})
 
-df = df.sample(n=5000, random_state=42)
+df = df.sample(n=10000, random_state=42)
 df.describe(include="all")
 
 
@@ -55,7 +56,7 @@ y = df['label']
 
 X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.2, random_state=42)
 #Train the model 
-model = MultinomialNB(max_iter=1000)
+model = MultinomialNB()
 model.fit(X_train,y_train)
 
 #Evaluate the model 

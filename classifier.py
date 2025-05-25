@@ -23,7 +23,9 @@ df['label'] = df['label'].map({'0': 0, '1': 1})
 
 df = df.sample(n=80000, random_state=42)
 print("Number of NaN labels:", df['label'].isna().sum())
+#Handle cases for Nan
 df = df.dropna(subset=['label'])
+df = df.dropna(subset=['text'])
 df.describe(include="all")
 
 
@@ -56,7 +58,8 @@ y = df['label']
 
 #Split data into training and testing sets
 
-X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.2, random_state=42)
+#stratified split 
+X_train, X_test, y_train, y_test = train_test_split(X,y, stratify=y, test_size=0.2, random_state=42)
 #Train the model 
 model = MultinomialNB()
 model.fit(X_train,y_train)

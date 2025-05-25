@@ -75,7 +75,7 @@ def plot_roc_curve(y_true, y_scores, title="ROC CURVE"):
     plt.savefig('roc_curve.png')
     plt.close()
 
-def plot_feature_importance(model, vectorizer, top_n = 10):
+def plot_feature_importance(model, vectorizer, top_n = 30):
     #plot top spam and ham words based on model coefficients
     feature_names = vectorizer.get_feature_names_out()
     #MultinomialNB coefficients for class spam (class 1)
@@ -113,7 +113,7 @@ def main():
     df.describe(include="all")
 
     #sample dataset
-    sample_size = 40000
+    sample_size = 80000
     if df.shape[0] < sample_size:
         logging.warning(f"Dataset has {df.shape[0]} rows, less than requested {sample_size}")
         sample_size = df.shape[0]

@@ -8,15 +8,28 @@ from nltk.stem import PorterStemmer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, roc_curve, roc_auc_score
+import matplotlib.pyplot as plt
+import seaborn as sns
+import joblib 
+import logging 
 
-#Run once
-nltk.download('stopwords')
+
+#Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s- %(levelname)s - %(messages)s')
+
+#Download NLTK (run once)
+try:
+    nltk.download('stopwords')
+except Exception as e:
+    logging.error(f"Failed to download NLTK: {e}")
+    raise
 
 
 #Load dataset
+def main():
+    #Plot top spam and ham words based on model coefficients
 df = pd.read_csv('combined_data.csv', encoding="latin-1", header=None)
-
 df.columns=['label', 'text']
 df = df[['label', 'text']]
 df['label'] = df['label'].map({'0': 0, '1': 1})
@@ -30,18 +43,40 @@ df.describe(include="all")
 
 
 def preprocess_text(text):
-    #Remove all special characters and noise keep only letters and space
-    text = re.sub(r'[^A-Za-z\s]', '', text, flags=re.MULTILINE)
-    #convert all text to lowercase to ensure consistency
-    text = text.lower()
-    words = text.split()
-    #remove all stopwords: those that have little or no sentiment 
-    stop_words = set(stopwords.words('english'))
-    words = [word for word in words if word not in stop_words]
-    #apply stemming
-    stemmer = PorterStemmer()
-    words = [stemmer.stem(word) for word in words]
-    return ' '.join(words)
+    #Preprocess text by cleaning, lowercasing, removing stop words and implementing stemming.
+    try:
+        if not isinstance(text, str):
+            logging.warning("No string input detected, returning empty string")
+            return ""
+        #Remove all special characters and noise keep only letters and space
+        text = re.sub(r'[^A-Za-z\s]', '', text, flags=re.MULTILINE)
+        #convert all text to lowercase to ensure consistency
+        text = text.lower()
+        words = text.split()
+        #remove all stopwords: those that have little or no sentiment 
+        stop_words = set(stopwords.words('english'))
+        words = [word for word in words if word not in stop_words]
+        #apply stemming
+        stemmer = PorterStemmer()
+        words = [stemmer.stem(word) for word in words]
+        return ' '.join(words)
+    except Exception as e:
+        logging.error(f"Error in preprocess_text: {e}")
+        return ""
+
+def plot_confusion_matrix(y_true, y_pred, title="Confusion Matrix"):
+    #plot confusion matrix using seaborn heat map
+
+    c_matrix = confusion_matrix(y_true, y_pred)
+    plt.figure(figsize=(6,4))
+    sns.heatmap(c_matrix, annot=True, fmt='d', cmap='Blues', cbar=False, xticklabels=['Ham (0)', 'Spam (1)'], yticklabels=['Ham (0)', 'Spam (1)'])
+    plt.title(title)
+    plt.xlabel('Predicted')
+    plt.ylabel('Actual')
+    plt.savefig('confusion_matrix.png')
+    plt.close()
+
+
 
 #Apply preprocesing
 

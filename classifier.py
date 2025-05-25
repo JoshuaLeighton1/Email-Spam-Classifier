@@ -77,6 +77,23 @@ def plot_confusion_matrix(y_true, y_pred, title="Confusion Matrix"):
     plt.close()
 
 
+def plot_roc_curve(y_true, y_scores, title="ROC CURVE"):
+    #Plot ROC Curve and compute the Area Under Curve
+
+    fpr, tpr, _ = roc_curve(y_true, y_scores)
+    auc = roc_auc_score(y_true, y_scores)
+    plt.figure(figsize=(6,4))
+    plt.plot(fpr, tpr, label=f'ROC CURVE ( AUC = {auc:.4f})')
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title(title)
+    plt.legend()
+    plt.savefig('roc_curve.png')
+    plt.close()
+
+
+
+
 
 #Apply preprocesing
 

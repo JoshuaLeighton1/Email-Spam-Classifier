@@ -16,7 +16,7 @@ import logging
 
 
 #Set up logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s- %(levelname)s - %(messages)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s- %(levelname)s - %(message)s')
 
 #Download NLTK (run once)
 try:
@@ -79,10 +79,10 @@ def plot_feature_importance(model, vectorizer, top_n = 10):
     #plot top spam and ham words based on model coefficients
     feature_names = vectorizer.get_feature_names_out()
     #MultinomialNB coefficients for class spam (class 1)
-    coefficients = model.coef_[0]
-    top_spam_idx = np.argsort(coefficients)[-top_n:]
+    log_probs = model.feature_log_prob_[0]
+    top_spam_idx = np.argsort(log_probs)[-top_n:]
     top_spam_words = [feature_names[i] for i in top_spam_idx]
-    top_spam_scores = [coefficients[i] for i in top_spam_idx]
+    top_spam_scores = [log_probs[i] for i in top_spam_idx]
     #plot
     plt.figure(figsize=(8,5))
     plt.barh(top_spam_words, top_spam_scores, color='red')
@@ -118,7 +118,7 @@ def main():
         logging.warning(f"Dataset has {df.shape[0]} rows, less than requested {sample_size}")
         sample_size = df.shape[0]
     df = df.sample(n=sample_size, random_state=42)
-    logging.info(f"Class distribution:\n {df['label'].value_counts()}")
+    #logging.info(f"Class distribution:\n {df['label'].value_counts()}")
 
     #apply preprocess text
     df['cleaned_text'] = df['text'].apply(preprocess_text) 
@@ -142,7 +142,7 @@ def main():
     #Evaluate the model 
     y_pred = model.predict(X_test)
     #probabilities for ROC
-    y_scores = mode.predict_proba(X_test)[:,1]
+    y_scores = model.predict_proba(X_test)[:,1]
     #Proportion of correct predictions
     accuracy = accuracy_score(y_test, y_pred)
     #accuracy of positive predictions 
